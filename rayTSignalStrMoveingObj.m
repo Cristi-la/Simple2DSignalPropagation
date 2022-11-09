@@ -1,0 +1,94 @@
+function [object_values, min_power, max_power] = rayTSignalStrMoveingObj(transmiters, roomSpace, walls, moveing_object, time_step, outputTimeBoundries, reflection_factor, scale_min)
+
+c = 3 * 10^8;
+
+min_v = Inf;
+max_v = -Inf;
+list_v = [];
+
+% time symimulated data
+syms t
+
+for ob = 1 : size(moveing_object)
+
+    mv_obj = moveing_object(ob, :);
+    line = [];
+
+    for ms = outputTimeBoundries(1) : time_step : outputTimeBoundries(2)
+        
+        x_t = mv_obj(1) + double(subs(mv_obj(3), t, ms / 1000));
+        y_t = mv_obj(2) + double(subs(mv_obj(4), t, ms / 1000));
+
+        
+        signal_strenght = 0;
+
+        % TRANSMITERY 
+        for i = 1 : size(transmiters)
+            signal_strenght = 0;
+            signal_reaches = 1;
+            active_tx = transmiters(i, :);
+            % SCIANY
+            for l = 1 : size(walls)
+
+                result = vectorCross(active_tx(1), active_tx(2), x_t, y_t, ...
+                    walls(l, 1), walls(l, 3), walls(l, 2), walls(l, 4));
+
+                if (result ~= -1)
+                    signal_reaches = 0;
+                end
+
+                if (result == 1)
+                    % signal might be reflected
+                    % check if any othe wall on the path
+                    interpoint = interX(x_t, active_tx(1), y_t, active_tx(2) ...
+                        ,walls(l, 1), walls(l, 2), walls(l, 3), walls(l, 4));
+                    % plot(interpoint(1),interpoint(2),'.'); pause
+
+                    reflected_reach = 1;
+                    for l_two = 1 : size(walls)
+                        if (l_two ~= l)
+                            result_two = vectorCross(interpoint(1), interpoint(1), x_t, y_t, ...
+                            walls(l_two, 1), walls(l_two, 3), walls(l_two, 2), walls(l_two, 4));
+                            if (result ~= -1)
+                                reflected_reach = 0;
+                                break;
+                            end
+                        end
+                    end
+                end
+            end
+
+            if (signal_reaches == 1)
+                lambda = c / (active_tx(4) * 1000); % "* 1000" because of kHz to Hz
+
+                r = sqrt((active_tx(1)-x_t)^2+(active_tx(2)-y_t)^2) / 100;
+                signal_strenght = signal_strenght + 1 * (lambda * exp(( -2j * pi * r) / (lambda) ) ) / (4 * pi * r);
+                %pause;
+                
+            end
+        end
+
+        if (signal_strenght==0)
+            line = [line, scale_min];
+        else
+            signal_strenght = active_tx(3) + 20*log10(signal_strenght);
+            if (min_v > double(signal_strenght))
+                min_v = double(signal_strenght);
+            end
+            if (max_v < double(signal_strenght))
+                max_v = double(signal_strenght);
+            end
+            
+            line = [line, signal_strenght];
+        end
+    end
+    list_v = [list_v ; line];
+end
+
+
+object_values = list_v;
+min_power = min_v;
+max_power = max_v;
+return
+
+
