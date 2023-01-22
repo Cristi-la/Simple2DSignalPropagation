@@ -33,7 +33,8 @@ for y = 0 : step :roomSpace(1)
                 lambda = c / active_tx(4) * 1000; % "* 1000" because of kHz to Hz
 
                 r = sqrt((active_tx(1)-x)^2+(active_tx(2)-y)^2) / 100;
-                signal_strenght = signal_strenght + 1 * (lambda * exp(( 2 * pi * r) / (lambda) ) ) / (4 * pi * r);
+                H = (lambda * exp((2 * pi * r) / (lambda) ) ) / (4 * pi * r);
+                signal_strenght = signal_strenght + active_tx(3) * H * H;
             end
         end
 

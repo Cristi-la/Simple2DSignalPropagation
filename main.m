@@ -9,8 +9,8 @@ frequance = 2.4 * 1000000; % kHz
 transmiters = [
     % x  ,   y  ,  tx_power, tx_frequency
     1000, 1000, txPower, frequance;
-    %200, 800, txPower, frequance;
-    %500, 1900, txPower, frequance;
+    200, 800, txPower, frequance;
+    500, 1900, txPower, frequance;
     
 ];
 
@@ -50,12 +50,12 @@ scale_min = -55;
 
 % UNDER CONSTRUCTION -> guffy output
 % ---------------------------------------------
-%[mesh, min_power, max_power] = rayTracingMesh(transmiters, roomSpace, walls, step, scale_min);
+[mesh, min_power, max_power] = rayTracingMesh(transmiters, roomSpace, walls, step, scale_min);
 % ---------------------------------------------
 
 
 % GRAPH FOR STUFF  BEFORE THIS LINE ^^^^^^^
-% figure;surf(mesh);shading('interp');colorbar
+figure;surf(mesh);shading('interp');colorbar
 
             %figure;            %  the same ^
             %surf(mesh)
@@ -86,19 +86,19 @@ outputTimeBoundries = [
 time_step = 10; % calculate every X ms
 
 % GRAPH ---------------------------------
-figure(room); createPathMovingObj(roomSpace, moveing_object, outputTimeBoundries, time_step);
-hold off;
+%figure(room); createPathMovingObj(roomSpace, moveing_object, outputTimeBoundries, time_step);
+%hold off;
 % GRAPH ---------------------------------
 
 % ---------------------------------------------
-[object_values, min_power, max_power] = rayTSignalStrMoveingObj(transmiters, roomSpace, walls, moveing_object, time_step, outputTimeBoundries, reflection_factor, scale_min)
+%[object_values, min_power, max_power] = rayTSignalStrMoveingObj(transmiters, roomSpace, walls, moveing_object, time_step, outputTimeBoundries, reflection_factor, scale_min)
 
-length(object_values)
-length(outputTimeBoundries(1):time_step:outputTimeBoundries(2))
+%length(object_values)
+%length(outputTimeBoundries(1):time_step:outputTimeBoundries(2))
 % GRAPH ---------------------------------
-figure;hold on;
-for num_mv_obj = 1 : size(object_values)
-    plot(outputTimeBoundries(1):time_step:outputTimeBoundries(2),object_values(num_mv_obj, :))
-end
+%figure;hold on;
+%for num_mv_obj = 1 : size(object_values)
+%    plot(outputTimeBoundries(1):time_step:outputTimeBoundries(2),object_values(num_mv_obj, :))
+%end
 % GRAPH ---------------------------------
 
